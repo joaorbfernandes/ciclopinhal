@@ -1,120 +1,93 @@
-# 🚴‍♂️ CICLOPINHAL
 
-An e-commerce platform built with Django for hands-on learning of professional web development, focusing on scalability, performance, and clean code practices.
+# CICLOPINHAL – E-commerce Project
 
----
-
-## 🚀 Project Goals
-
-* Build a Django-based e-commerce platform with PostgreSQL
-* Host using a scalable and sustainable service (Render - free tier initially)
-* Explore optional Stripe integration and technical SEO
-* Apply modular code architecture and best development practices
+CICLOPINHAL is a professional and educational Django-based e-commerce platform under development.  
+This project is structured for scalability, clean architecture, technical SEO, and analytics integration.
 
 ---
 
-## 🧰 Tech Stack
+## 🚀 Tech Stack
 
-### ✅ Currently Used
-
-* Python 3.12
-* Django 5.x
-* SQLite (local, PostgreSQL planned for production)
-* Git + GitHub
-* HTML, basic CSS
-* Virtual Environment (`venv`) external to the project
-* `psycopg2-binary`, `gunicorn`, `whitenoise`, `dj-database-url`, `python-dotenv`
-
-### 🔄 Planned for Future Phases
-
-* PostgreSQL in production
-* Render for deployment
-* Tailwind CSS
-* JavaScript and React
-* Stripe integration
-* Google Analytics + SEO tools
+- Python 3.12
+- Django 5.x
+- PostgreSQL (Render)
+- HTML + Tailwind CSS (future)
+- Render (deployment)
+- GitHub (public portfolio)
 
 ---
 
-## 🔧 Running the Project Locally
+## ⚙️ Local Development Setup
 
-1. **Clone the repository**
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/your-username/ciclopinhal.git
 cd ciclopinhal
 ```
 
-2. **Create and activate a virtual environment (outside the project folder)**
+### 2. Create and activate a virtual environment
 
 ```bash
-cd ~/CiclopinhalApp
-python3.12 -m venv venv-ciclopinhal
-source venv-ciclopinhal/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-3. **Navigate to the project and install dependencies**
+### 3. Install dependencies
 
 ```bash
-cd CICLOPINHAL
 pip install -r requirements.txt
 ```
 
-4. **Apply migrations and run the development server**
+### 4. Configure environment variables
+
+Create a `.env` file based on the `.env.example` provided:
 
 ```bash
-python manage.py migrate
-python manage.py runserver
+cp .env.example .env
 ```
+
+Fill in your secret key and DB credentials (if using PostgreSQL).
 
 ---
 
-## 📦 Dependencies (`requirements.txt`)
+### 5. Run the development server
 
-```text
-Django>=5.0
-psycopg2-binary>=2.9
-gunicorn>=21.2
-whitenoise>=6.6
-python-dotenv>=1.0
-dj-database-url>=0.5
+```bash
+python manage.py runserver
 ```
 
-> Update this file regularly with: `pip freeze > requirements.txt`
+Visit `http://127.0.0.1:8000/` to see the app in action.
 
 ---
 
 ## 📂 Project Structure
 
-```text
-CICLOPINHAL/
-├── ciclopinhal/        # Django settings module
-├── website/            # Main Django app
-├── templates/
-├── static/
-├── media/
+```
+ciclopinhal/
+├── ciclopinhal/         ← Django project
+│   └── settings/        ← Modular settings (base, dev, prod)
+├── website/             ← Main Django app
+├── templates/           ← HTML templates
+├── static/              ← Static files (CSS, JS, images)
+├── media/               ← Uploaded files (images from admin)
+├── .env.example         ← Template for environment config
 ├── manage.py
-├── requirements.txt
-└── README.md
 ```
 
 ---
 
-## 📌 Current Status
+## 🧠 Learning Objectives
 
-> In early development. Initial MVP includes:
-
-* Homepage
-* Product listing
-* Product detail pages
-* Session-based shopping cart
-* PostgreSQL and Render setup preparation
+This project is part of a full learning journey:
+- Understand Django architecture and best practices
+- Prepare for secure deployment
+- Integrate SEO and analytics
+- Manage performance and database monitoring
 
 ---
 
-## 🔮 Next Steps
+## ✅ Credits
 
-* Refactor into modular Django apps (`products`, `orders`, `users`, etc.)
-* Optional: integrate Stripe (can be mocked for practice)
-* Implement technical SEO features and analytics
-* Add user authentication and account dashboard
+Maintained by [Your Name].  
+For educational and portfolio purposes.
