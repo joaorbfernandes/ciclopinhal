@@ -1,0 +1,24 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+{% block title %}Lista de Produtos{% endblock title %}
+
+{% block content %}
+  <h2>Produtos Disponíveis</h2>
+  <ul>
+    {% for product in products %}
+      <li>
+        <h3>
+          <a href="{% url 'product_detail' slug=product.slug %}">{{ product.name }}</a>
+        </h3>
+        <p><strong>{{ product.price }} €</strong></p>
+        <p><em>{{ product.description }}</em></p>
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" width="200px">
+        <br>
+        <a href="{% url 'product_detail' slug=product.slug %}" class="btn btn-secondary">Ver mais</a>
+      </li>
+    {% empty %}
+      <li>Não há produtos disponíveis de momento</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

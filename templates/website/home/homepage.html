@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<!-- Hero -->
+<!-- Hero section -->
 <section class="hero-section full-width">
     <img src="{% static 'website/images/hero-ciclista.jpg' %}" alt="Ciclista em ação" class="hero-bg">
     <div class="hero-overlay">
@@ -19,36 +19,38 @@
             <p>Descobre o mundo das bicicletas com qualidade, paixão e confiança.</p>
             <p>A tua loja especializada em bicicletas no Pinhal Novo.</p>
             <div class="hero-buttons">
-                <a href="{% url 'lista_produtos' %}" class="btn btn-primary">Ver produtos</a>
+                <!-- Corrected: URL now points to updated product list view -->
+                <a href="{% url 'product_list' %}" class="btn btn-primary">Ver produtos</a>
                 <a href="#contactos" class="btn btn-secondary">Contactar-nos</a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Parceiros -->
+<!-- Partners section -->
 <section class="parceiros-section full-width">
     <div class="layout-container">
         <ul class="parceiros-list">
-            {% for parceiro in parceiros %}
-                <li><img src="{{ parceiro.imagem.url }}" alt="Marca {{ parceiro.nome }}"></li>
+            {% for partner in partners %}
+                <li><img src="{{ partner.image.url }}" alt="Marca {{ partner.name }}"></li>
             {% endfor %}
         </ul>
     </div>
 </section>
 
-<!-- Destaques -->
+<!-- Featured products section -->
 <section class="destaques-section full-width">
     <div class="layout-container">
         <ul class="grid-3">
-            {% for destaque in destaques %}
+            {% for highlight in highlights %}
                 <li class="card-produto">
                     <div class="card-inner">
-                        <img src="{{ destaque.produto.imagem.url }}" alt="{{ destaque.produto.nome }}">
+                        <img src="{{ highlight.product.image.url }}" alt="{{ highlight.product.name }}">
                         <div class="card-content">
-                            <h3>{{ destaque.produto.nome }}</h3>
-                            <p class="preco">{{ destaque.produto.preco }} €</p>
-                            <a href="{% url 'lista_produtos' %}" class="btn btn-card">Ver mais</a>
+                            <h3>{{ highlight.product.name }}</h3>
+                            <p class="preco">{{ highlight.product.price }} €</p>
+                            <!-- Link to product detail via slug -->
+                            <a href="{{ highlight.product.get_absolute_url }}" class="btn btn-card">Ver mais</a>
                         </div>
                     </div>
                 </li>
@@ -57,7 +59,7 @@
     </div>
 </section>
 
-<!-- Serviços -->
+<!-- Services section -->
 <section class="servicos-section full-width" id="servicos">
     <div class="layout-container">
         <h2 class="section-header">Os nossos serviços</h2>
@@ -81,24 +83,25 @@
     </div>
 </section>
 
-<!-- Contactos -->
+<!-- Contact section -->
 <section class="contactos-section" id="contactos">
     <div class="contactos-card">
-      <div class="contactos-content">
-        <div class="contactos-info">
-          <h2 class="section-header">Contactos</h2>
-          <p><strong>Morada:</strong> Rua das Bicicletas, 2900-000 Pinhal Novo</p>
-          <p><strong>Email:</strong> <a href="mailto:geral@ciclopinhal.pt">geral@ciclopinhal.pt</a></p>
-          <p><strong>Telefone:</strong> <a href="tel:+351912345678">912 345 678</a></p>
+        <div class="contactos-content">
+            <div class="contactos-info">
+                <h2 class="section-header">Contactos</h2>
+                <p><strong>Morada:</strong> Rua das Bicicletas, 2900-000 Pinhal Novo</p>
+                <p><strong>Email:</strong> <a href="mailto:geral@ciclopinhal.pt">geral@ciclopinhal.pt</a></p>
+                <p><strong>Telefone:</strong> <a href="tel:+351912345678">912 345 678</a></p>
+            </div>
+            <div class="contactos-mapa">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=..."
+                    allowfullscreen 
+                    loading="lazy">
+                </iframe>
+            </div>
         </div>
-        <div class="contactos-mapa">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d24937.46914884979!2d-8.952664973754885!3d38.621656134116556!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd1940c9699491ef%3A0x1ca6403847e1a260!2sCicloPinhal%2C%20Lda.!5e0!3m2!1sen!2spt!4v1746193989492!5m2!1sen!2spt"
-            allowfullscreen 
-            loading="lazy">
-          </iframe>
-        </div>
-      </div>
     </div>
-  </section>
+</section>
+
 {% endblock %}

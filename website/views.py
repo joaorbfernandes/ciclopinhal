@@ -1,21 +1,31 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Produto, ProdutoDestaque, Parceiro
+from django.shortcuts import render
+from django.views.generic import ListView, DetailView
+from .models import Product, FeaturedProduct, Partner
 
-# Create your views here.
 
+# Homepage with featured products and partners
 def homepage(request):
-    destaques = ProdutoDestaque.objects.select_related('produto').order_by('ordem')[:6]
-    parceiros = Parceiro.objects.order_by('-principal', 'nome')[:6]
+    highlights = FeaturedProduct.objects.select_related('product').order_by('order')[:6]
+    partners = Partner.objects.order_by('-is_main', 'name')[:6]
     return render(request, 'website/home/homepage.html', {
-        'destaques': destaques,
-        'parceiros': parceiros,
-        })
+        'highlights': highlights,
+        'partners': partners,
+    })
 
-def lista_produtos(request):
-    produtos= Produto.objects.all()
-    return render(request, 'website/produtos/lista_produtos.html', {'produtos': produtos})
 
-def detalhe_produto(request, pk):
-    produto = get_object_or_404(Produto, pk=pk)
-    return render(request, 'website/produtos/detalhe_produto.html', {"produto": produto})
+# Product list (CBV)
+class ProductListView(ListView):
+    model = Product
+    template_name = 'website/products/product_list.html'
+    context_object_name = 'products'
+    queryset = Product.objects.all()
+
+
+# Product detail (CBV)
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'website/products/product_detail.html'
+    context_object_name = 'product'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
 

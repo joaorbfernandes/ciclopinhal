@@ -1,7 +1,7 @@
 {% extends "website/base.html" %}
 {% load static %}
 
-{% block title %}{{ produto.nome }} - Ciclopinhal{% endblock %}
+{% block title %}{{ product.name }} - Ciclopinhal{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'website/css/produto.css' %}">
@@ -9,14 +9,14 @@
 
 {% block content %}
 <section class="produto-detalhe section">
-    <h1>{{ produto.nome }}</h1>
+    <h1>{{ product.name }}</h1>
 
     <div class="produto-info">
-        <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="produto-imagem">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="produto-imagem">
 
         <div class="produto-descricao">
-            <p><strong>Preço:</strong> {{ produto.preco }} €</p>
-            <p>{{ produto.descricao }}</p>
+            <p><strong>Preço:</strong> {{ product.price }} €</p>
+            <p>{{ product.description }}</p>
         </div>
     </div>
 </section>
