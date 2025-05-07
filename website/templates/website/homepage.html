@@ -1,0 +1,104 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+{% block title %}Ciclopinhal - A sua loja de bicicletas{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'website/css/homepage.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="hero-section full-width">
+    <img src="{% static 'website/images/hero-ciclista.jpg' %}" alt="Ciclista em ação" class="hero-bg">
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <span class="badge">Shimano Service Center</span>
+            <h1>Bicicleta: um modo de vida</h1>
+            <p>Descobre o mundo das bicicletas com qualidade, paixão e confiança.</p>
+            <p>A tua loja especializada em bicicletas no Pinhal Novo.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'lista_produtos' %}" class="btn btn-primary">Ver produtos</a>
+                <a href="#contactos" class="btn btn-secondary">Contactar-nos</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Parceiros -->
+<section class="parceiros-section full-width">
+    <div class="layout-container">
+        <ul class="parceiros-list">
+            {% for parceiro in parceiros %}
+                <li><img src="{{ parceiro.imagem.url }}" alt="Marca {{ parceiro.nome }}"></li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+
+<!-- Destaques -->
+<section class="destaques-section full-width">
+    <div class="layout-container">
+        <ul class="grid-3">
+            {% for destaque in destaques %}
+                <li class="card-produto">
+                    <div class="card-inner">
+                        <img src="{{ destaque.produto.imagem.url }}" alt="{{ destaque.produto.nome }}">
+                        <div class="card-content">
+                            <h3>{{ destaque.produto.nome }}</h3>
+                            <p class="preco">{{ destaque.produto.preco }} €</p>
+                            <a href="{% url 'lista_produtos' %}" class="btn btn-card">Ver mais</a>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+
+<!-- Serviços -->
+<section class="servicos-section full-width" id="servicos">
+    <div class="layout-container">
+        <h2 class="section-header">Os nossos serviços</h2>
+        <span class="badge">Shimano Service Center</span>
+        <div class="servicos-grid">
+            <div class="servico-item">
+                <img src="{% static 'website/images/servico_reparacao.jpg' %}" alt="Reparação de bicicletas">
+                <div class="servico-texto">
+                    <h3>Reparação</h3>
+                    <p>Diagnóstico preciso = soluções rápidas.</p>
+                </div>
+            </div>
+            <div class="servico-item">
+                <img src="{% static 'website/images/servico_manutencao.jpg' %}" alt="Manutenção de bicicletas">
+                <div class="servico-texto">
+                    <h3>Manutenção</h3>
+                    <p>Manutenção regular para prolongar a vida útil da sua bicicleta.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contactos -->
+<section class="contactos-section" id="contactos">
+    <div class="contactos-card">
+      <div class="contactos-content">
+        <div class="contactos-info">
+          <h2 class="section-header">Contactos</h2>
+          <p><strong>Morada:</strong> Rua das Bicicletas, 2900-000 Pinhal Novo</p>
+          <p><strong>Email:</strong> <a href="mailto:geral@ciclopinhal.pt">geral@ciclopinhal.pt</a></p>
+          <p><strong>Telefone:</strong> <a href="tel:+351912345678">912 345 678</a></p>
+        </div>
+        <div class="contactos-mapa">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d24937.46914884979!2d-8.952664973754885!3d38.621656134116556!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd1940c9699491ef%3A0x1ca6403847e1a260!2sCicloPinhal%2C%20Lda.!5e0!3m2!1sen!2spt!4v1746193989492!5m2!1sen!2spt"
+            allowfullscreen 
+            loading="lazy">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

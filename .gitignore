@@ -1,0 +1,26 @@
+# Ambientes virtuais
+venv/
+venv-ciclopinhal/
+source/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+
+# VS Code
+.vscode/
+
+# Ficheiros de ambiente
+.env
+*.env
+
+# Backups ou dados fora do projeto
+backup/

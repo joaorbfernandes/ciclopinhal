@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %} Ciclopinhal {% endblock %}</title>
+  
+  <link rel="stylesheet" href="{% static 'website/css/style.css' %}">
+
+  {% block extra_css %}
+  <link rel="stylesheet" href="{% static 'website/css/homepage.css' %}">
+  {% endblock %}
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="layout-container nav-container">
+      <h1 class="logo">Ciclopinhal</h1>
+      <nav aria-label="Navegação principal">
+        <ul class="nav-links">
+          <li><a href="{% url 'homepage' %}">Início</a></li>
+          <li><a href="{% url 'lista_produtos' %}">Produtos</a></li>
+          <li><a href="/#servicos">Serviços</a></li>
+          <li><a href="/#contactos">Contactos</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}
+    {# Conteúdo de cada página #}
+    {% endblock %}
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h4>Ciclopinhal</h4>
+        <p>A sua loja especializada em bicicletas no Pinhal Novo.</p>
+      </div>
+      <div>
+        <a href="#inicio">Início</a>
+        <a href="#produtos">Produtos</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#contactos">Contactos</a>
+      </div>
+      <div>
+        <h4>Horário</h4>
+        <p>Seg a Sex: 10h – 13h / 15h – 19h30</p>
+        <p>Sáb e Dom: Fechado</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2025 Ciclopinhal
+    </div>
+  </footer>
+  
+</body>
+</html>
