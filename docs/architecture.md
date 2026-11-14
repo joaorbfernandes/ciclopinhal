@@ -266,6 +266,7 @@ Kept current by every PR that changes a listed entry point or use case. Cells ar
 | 0012 | Backward-compatible migrations |
 | 0013 | Backups and tested recovery objectives |
 | 0014 | Specification-driven process with independent agent review |
+| 0015 | Agents share the developer's Git credentials (E4b b) |
 
 ADRs to write when decided: contract style (PoC), administration technology (spike), variant timing (M3
-measurement), slug policy (D12), repository visibility and plan (E4), release identity model (E4b), hosting (E9).
+measurement), slug policy (D12), repository visibility and plan (E4), hosting (E9).

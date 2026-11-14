@@ -1,0 +1,30 @@
+version: 2
+
+updates:
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  # Base images in the Dockerfile. Python stays on 3.13 until a deliberate upgrade spec (docs/engineering.md §1).
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: python
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  # The PostgreSQL image in compose.yaml. The major version tracks production; patch and minor updates only.
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]

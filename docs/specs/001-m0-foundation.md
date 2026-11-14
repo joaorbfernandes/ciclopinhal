@@ -1,8 +1,8 @@
 # 001 — M0 repository foundation
 
-Status: draft
+Status: in progress
 Milestone: M0
-ADRs: 0002, 0010, 0011, 0014
+ADRs: 0002, 0010, 0011, 0014, 0015
 
 ## Goal
 

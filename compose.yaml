@@ -1,0 +1,42 @@
+name: ciclopinhal
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ciclopinhal}
+      POSTGRES_USER: ${POSTGRES_USER:-ciclopinhal}
+      # Local development credential, published on 127.0.0.1 only. Set POSTGRES_PASSWORD in .env to change it.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ciclopinhal}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Runs the app on the `dev` image. Not started by `make up`; use `docker compose --profile app up`.
+  app:
+    profiles: ["app"]
+    build:
+      context: .
+      target: dev
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB:-ciclopinhal}
+      POSTGRES_USER: ${POSTGRES_USER:-ciclopinhal}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ciclopinhal}
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

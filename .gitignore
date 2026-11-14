@@ -1,0 +1,25 @@
+# Environment and secrets: never committed (only .env.example, which holds names without values)
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.import_linter_cache/
+.coverage
+htmlcov/
+
+# Generated and runtime data
+/staticfiles/
+/media/
+/data/
+
+# Tooling and editors
+.DS_Store
+.idea/
+.vscode/
