@@ -4,14 +4,14 @@ Configurable web platform for small businesses — website, product catalogue, b
 content managed through a simple backoffice — starting with Ciclopinhal.
 Django + PostgreSQL modular monolith, built by one developer with Claude Code and Codex.
 
-**Status:** pre-M0. The commands below exist only after M0 is complete (`docs/specs/001-m0-foundation.md`).
+**Status:** M0 repository foundation (`docs/specs/001-m0-foundation.md`): tooling, CI and local environment only; no product code yet.
 
 ## Prerequisites
 
 - Docker with Compose
 - uv
 
-## Everyday commands (after M0)
+## Everyday commands
 
 ```sh
 make setup      # install the locked environment (uv sync --locked)
@@ -21,6 +21,10 @@ make test-fast  # domain + application tests (no database)
 make test       # full suite against PostgreSQL
 make e2e        # critical browser journeys (from M6)
 ```
+
+A fresh clone with Docker and uv runs `make setup && make up && make test`. The local database listens on
+`127.0.0.1:5433`; change that or any other setting in an untracked `.env` (names in `.env.example`). To run the app
+in the `dev` image instead of on the host: `docker compose --profile app up`.
 
 ## Documentation
 

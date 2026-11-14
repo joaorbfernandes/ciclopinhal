@@ -1,8 +1,8 @@
 # 001 — M0 repository foundation
 
-Status: draft
+Status: done
 Milestone: M0
-ADRs: 0002, 0010, 0011, 0014
+ADRs: 0002, 0010, 0011, 0014, 0015
 
 ## Goal
 
@@ -92,18 +92,59 @@ deliberate violations — before any product code exists.
 
 ## Acceptance criteria
 
-- [ ] Fresh clone with only Docker and uv: `make setup && make up && make test` passes.
-- [ ] `make check` runs Ruff format/lint, `uv lock --check`, mypy, import-linter and gitleaks.
-- [ ] CI installs with `uv sync --locked`; `manage.py check --deploy` passes with prod settings and dummy values.
-- [ ] Every negative check in the table failed as expected; evidence is linked in the PR; no fixture remains in
+- [x] Fresh clone with only Docker and uv: `make setup && make up && make test` passes.
+- [x] `make check` runs Ruff format/lint, `uv lock --check`, mypy, import-linter and gitleaks.
+- [x] CI installs with `uv sync --locked`; `manage.py check --deploy` passes with prod settings and dummy values.
+      (Run as `make deploy-check`: Django's deployment checks pass with the four deferred warnings listed in
+      `deploy-warnings-deferred.txt`, printed and not suppressed; `docs/engineering.md` §7.)
+- [x] Every negative check in the table failed as expected; evidence is linked in the PR; no fixture remains in
       the merged tree.
-- [ ] Required status checks are active on `main`; the `v*` tag ruleset is active.
-- [ ] If E4b = (a): the agent identity cannot push to `main` or create a `v*` tag.
-- [ ] No module packages, domain code or empty layer files exist yet.
-- [ ] No real secrets anywhere; `.env` is ignored by Git and Docker.
+- [x] Required status checks are active on `main`; the `v*` tag ruleset is active.
+- n/a If E4b = (a): the agent identity cannot push to `main` or create a `v*` tag. E4b = (b), see ADR-0015.
+- [x] No module packages, domain code or empty layer files exist yet.
+- [x] No real secrets anywhere; `.env` is ignored by Git and Docker.
 
 If import-linter cannot run without at least one contract while no modules exist, the implementing agent keeps
 the smallest real contract possible for `backend.config` and states it in the PR.
+
+## Evidence
+
+Verified on commit `560be04` of `chore/m0-foundation` (PR #1).
+
+**E4b = (b) is an approved, temporary exception** (ADR-0015): the implementing agents share the human's local
+credentials. Steps 12(a) and 23 and the E4b = (a) criterion therefore do not apply; the compensating controls and the
+revisit triggers are in ADR-0015. Consistent with (b), the `main` ruleset requires no approving review.
+
+| Criterion | Evidence |
+| --- | --- |
+| Fresh clone | 2026-11-14: new clone of the remote branch (no `.venv`, no `.env`), clean environment, Compose project `m0verify1114`, host port 54329 on loopback. `make setup`, `make up`, `make test` exit 0 (36 passed; `test-fast` has no domain or application tests until M1). Only the temporary containers were stopped afterwards. |
+| `make check` | Same clone, exit 0: Ruff format (38 files) and lint, `uv lock --check`, mypy (2 files), import-linter (1 contract kept, 0 broken), gitleaks history (2 commits) and working tree, no leaks. |
+| CI | [Run #1](https://github.com/joaorbfernandes/ciclopinhal/actions/runs/43604771185) on `560be04`: `quality`, `test`, `migrations`, `security`, `secrets` all succeeded. Jobs install with `uv sync --locked`; all 9 `uses:` lines are pinned to 40-character SHAs; Dependabot covers uv, github-actions, docker and docker-compose. `make deploy-check` also exits 0 in the fresh clone. |
+| Rulesets | Read through GitHub's public API on 2026-11-14. `project-main` (active): deletion, non-fast-forward, pull request, linear history, required status checks `quality`, `test`, `migrations`, `security`, `secrets` (branch must be up to date). `release-tag-creation` (creation, deletion, non-fast-forward) and `release-tag-immutability` (update, deletion, non-fast-forward), both active on `refs/tags/v*`. Bypass actors (creation limited to Repository admin), merge method and the Dependabot and secret-scanning settings are not visible without authentication and were confirmed by the human. |
+| No module code | `git ls-files` of the fresh clone: `backend/config/` and `backend/manage.py`, four test files, two `.gitkeep`; no `core`, `media`, `catalog`, `content`, `storefront` or `backoffice` path and no `domain.py`, `application.py`, `repositories.py`, `api.py`, `queries.py` or `services.py`. |
+| Secrets and `.env` | gitleaks clean on history and tree; `git check-ignore -v .env` matches `.gitignore:2`; `.dockerignore` lists `.env` and `.env.*`; the only tracked env file is `.env.example` (names only). |
+| No fixture left | The six fixtures below were removed and the tree compared by SHA-256 before and after (48 files, identical); none is tracked in the fresh clone. |
+
+### Negative checks
+
+Run locally on 2026-11-12 with temporary fixtures, then removed. The check commands and configuration have not changed
+since, except that the mypy scope now also covers `backend/config/deploy_check.py`.
+
+| # | Check | Fixture | Command and result |
+| --- | --- | --- | --- |
+| 1 | Architecture rules | Two packages, a `layers` contract, a lower package importing the higher | `make imports` exit 2: `FIXTURE: high may import low, never the reverse BROKEN`; `backend.zz_fixture_arch_low.api -> backend.zz_fixture_arch_high.api (l.1)`; the real contract stayed KEPT |
+| 2 | Cross-module relation | Two apps, a foreign key from one to the other, not in the allowlist | `pytest tests/test_relation_allowlist.py` exit 1: `Cross-module relations missing from the allowlist: ['zz_fixture_rel_b.Link.thing']` |
+| 3 | Lockfile consistency | Added `sqlparse>=0.5` to `pyproject.toml` without re-locking | `make lock-check` exit 2 and `uv sync --locked` exit 1: `The lockfile at uv.lock needs to be updated` |
+| 4 | Type checking | A `Protocol`, an implementation with `item_id: str` instead of `int`, typed wiring in the mypy scope | `make typecheck` exit 2: `Incompatible return value type (got "InMemoryItemRepository", expected "ItemRepository")` |
+| 5 | Secret detection | A synthetic `ghp_` token generated for the test, never printed | `make secrets` exit 2: `RuleID: github-pat`, `leaks found: 1`. History mode proven on a throwaway clone with the fixture committed: `gitleaks git` exit 1, same rule |
+| 6 | Migrations | Two fixture models without migrations | `makemigrations --check` exit 1: `Create model Thing`, `Create model Link` |
+
+### Not verified by an agent
+
+- The negative checks were run locally, not in CI; CI shows the positive run only.
+- Required approvals, admin-only tag creation, squash-only merge, Dependabot alerts, secret scanning and push protection
+  are repository settings an agent cannot read; the human confirmed them.
+- CI has not run on the squash commit on `main`; that happens when the PR is merged.
 
 ## Out of scope
 

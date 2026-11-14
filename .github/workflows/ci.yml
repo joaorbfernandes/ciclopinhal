@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Actions are pinned to commit SHAs; Dependabot keeps them current. Keep the uv version in step with the Dockerfile.
+# Jobs `quality`, `test`, `migrations`, `security` and `secrets` are the required status checks on `main`.
+# The `image` job (Phase 1) and `e2e` job (M6) are added by their milestones.
+
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.9.17"
+          enable-cache: false
+      - run: uv sync --locked
+      - run: make lint lock-check typecheck imports
+
+  test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: ciclopinhal
+          POSTGRES_USER: ciclopinhal
+          POSTGRES_PASSWORD: ci-throwaway-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ciclopinhal -d ciclopinhal"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      POSTGRES_DB: ciclopinhal
+      POSTGRES_USER: ciclopinhal
+      POSTGRES_PASSWORD: ci-throwaway-password
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: "5432"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.9.17"
+          enable-cache: false
+      - run: uv sync --locked
+      # `make test` runs domain and application tests with DJANGO_SETTINGS_MODULE unset, then the full suite.
+      - run: make test
+
+  migrations:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: ciclopinhal
+          POSTGRES_USER: ciclopinhal
+          POSTGRES_PASSWORD: ci-throwaway-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ciclopinhal -d ciclopinhal"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      POSTGRES_DB: ciclopinhal
+      POSTGRES_USER: ciclopinhal
+      POSTGRES_PASSWORD: ci-throwaway-password
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: "5432"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.9.17"
+          enable-cache: false
+      - run: uv sync --locked
+      - name: Every model change has a migration
+        run: uv run --frozen python backend/manage.py makemigrations --check --dry-run
+        env:
+          DJANGO_SETTINGS_MODULE: backend.config.settings.test
+      - name: Migrate an empty database
+        run: uv run --frozen python backend/manage.py migrate --noinput
+        env:
+          DJANGO_SETTINGS_MODULE: backend.config.settings.test
+      # The destructive-operation check is added in M2.
+      # Production settings with dummy values. Deferred warnings (deploy-warnings-deferred.txt) stay visible in the log;
+      # any other warning fails the job.
+      - name: Deployment checks
+        run: make deploy-check
+
+  security:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.9.17"
+          enable-cache: false
+      - run: uv sync --locked
+      - name: Audit the exported lockfile (runtime and dev dependencies)
+        run: |
+          uv export --locked --no-emit-project --format requirements-txt -o "$RUNNER_TEMP/requirements.txt"
+          uv run --frozen pip-audit --requirement "$RUNNER_TEMP/requirements.txt" --no-deps --disable-pip
+
+  secrets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # Same pinned gitleaks image as `make check`; scans the whole history and the checked-out tree.
+      - run: make secrets

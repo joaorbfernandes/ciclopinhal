@@ -1,0 +1,8 @@
+# Django `check --deploy` warnings that are known and deliberately deferred (docs/engineering.md §7).
+# They are never suppressed: `make deploy-check` prints them on every run. It fails on any warning that is not
+# listed here, and on a listed warning that Django no longer reports, so each phase removes its entries in the same
+# change that introduces the setting. One check ID per line; text after # is a note.
+security.W004  # SECURE_HSTS_SECONDS: HSTS rollout, 1 hour on staging first (Phase 3)
+security.W008  # SECURE_SSL_REDIRECT: HTTPS only (Phase 2)
+security.W012  # SESSION_COOKIE_SECURE (Phase 2)
+security.W016  # CSRF_COOKIE_SECURE (Phase 2)

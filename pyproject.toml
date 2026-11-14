@@ -1,0 +1,89 @@
+[project]
+name = "ciclopinhal"
+version = "0.0.0"
+description = "CICLOPINHALEND 2.0 — configurable web platform for small businesses"
+readme = "README.md"
+requires-python = "==3.13.*"
+dependencies = [
+    "django>=5.2,<5.3",
+    "psycopg[binary]>=3.2,<4",
+]
+
+[dependency-groups]
+dev = [
+    "import-linter>=2.3",
+    "mypy>=1.13",
+    "pip-audit>=2.7",
+    "pytest>=8.3",
+    "pytest-django>=4.9",
+    "ruff>=0.8",
+]
+
+[tool.uv]
+# An application, not a distributable package: nothing is installed from `backend/` itself.
+package = false
+required-version = ">=0.9.17"
+
+# --- Ruff ---------------------------------------------------------------------------------------------------------
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ"]
+
+[tool.ruff.lint.per-file-ignores]
+# Django settings modules extend `base` with a star import by convention.
+"backend/config/settings/*.py" = ["F403", "F405"]
+
+# --- mypy (flags: docs/engineering.md §1) ----------------------------------------------------------------------------
+# The files in scope are listed once, in the Makefile (MYPY_SCOPE), because mypy rejects a `files` glob that matches
+# nothing and no module exists yet.
+
+[tool.mypy]
+python_version = "3.13"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["django.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["backend.*.domain", "backend.*.application"]
+warn_return_any = true
+
+# --- pytest ---------------------------------------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "backend"]
+pythonpath = ["."]
+addopts = "--strict-markers --import-mode=importlib"
+# `backend/manage.py` must not put `backend/` on sys.path: modules are imported as `backend.<name>` only.
+django_find_project = false
+markers = [
+    "domain: pure-Python domain tests, no Django settings",
+    "app: application tests against in-memory fakes, no Django settings",
+    "integration: needs Django settings and PostgreSQL",
+    "http: Django test client + PostgreSQL",
+    "e2e: Playwright critical journeys",
+]
+
+# --- import-linter (architecture rules: docs/architecture.md §1) ------------------------------------------------------
+# Each module adds its own contracts when it is created. Until then the one real contract keeps the settings layering
+# honest (SPEC-001: smallest real contract for `backend.config`).
+
+[tool.importlinter]
+root_packages = ["backend"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Settings: environment modules extend base, never each other"
+type = "layers"
+layers = [
+    "backend.config.settings.dev | backend.config.settings.test | backend.config.settings.prod",
+    "backend.config.settings.base",
+    "backend.config.env",
+]

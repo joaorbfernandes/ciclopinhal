@@ -79,12 +79,11 @@ Repository settings (public GitHub Free):
   restrict its deployment refs to `v*` tags. Test that approval is enforced before deployment.
   The environment review gate supplements, rather than replaces, the staging-SHA and image-digest verification.
 
-**Open [E4b] — release identity model:**
-
-- (a) Recommended: agents use a dedicated machine account (collaborator, write access, 2FA); Claude Code uses
-  that account's token, never your login; Codex's GitHub identity verified at M0. Only you bypass the tag ruleset.
-- (b) Agents share your credentials: "only the human tags releases" is a documented policy, not a control; the
-  residual risk is recorded in an ADR.
+**Decided [E4b] — release identity model: (b), temporarily (ADR-0015).** Agents share the developer's local
+credentials, so "only the human tags releases" is a documented policy, not a control; the human performs every remote
+Git operation. The alternative, (a), is a dedicated machine account (collaborator, write access, 2FA) whose token
+Claude Code uses, never your login, with Codex's identity verified; only you would bypass the tag ruleset. ADR-0015
+lists the residual risk and when to revisit.
 
 ## 4. Continuous integration
 
@@ -139,6 +138,12 @@ Runs on every PR and push to `main`. All jobs block merge.
 | Deploy key limited to the deploy user; tokens with minimal scopes | Phase 2 |
 | Django security releases applied within 7 days; green Dependabot PRs merged weekly | M0 onward |
 | **Open [E16]** CSP, login rate limiting, staff 2FA | Before go-live |
+
+Django's `check --deploy` warnings for rows not yet introduced are never suppressed. They are listed in
+`deploy-warnings-deferred.txt` and printed by `make deploy-check` (CI job `migrations`). The gate reads Django's
+structured check messages, not the printed text. It fails on any message that is not a listed warning (whatever its level
+or id, including none), on a listed warning that is no longer reported, on an invalid list, and on any failure to run
+the checks, so each phase removes its entries with its setting.
 
 ## 8. Migrations (ADR-0012)
 

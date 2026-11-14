@@ -1,6 +1,6 @@
 # 0011 — Single immutable image and release verification
 
-Status: Accepted (release identity model pending E4b)
+Status: Accepted (release identity model: E4b option b, ADR-0015)
 
 **Context.** The repository is public on GitHub Free, where environment required reviewers are available. An
 agent using the developer's credentials is still indistinguishable from the developer for Git operations.

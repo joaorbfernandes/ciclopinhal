@@ -1,0 +1,16 @@
+# Extend the default ruleset; only exclude tool-generated directories that are not part of the repository.
+title = "ciclopinhal gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated directories (ignored by Git)"
+paths = [
+    '''(^|/)\.venv/''',
+    '''(^|/)\.mypy_cache/''',
+    '''(^|/)\.pytest_cache/''',
+    '''(^|/)\.ruff_cache/''',
+    '''(^|/)\.import_linter_cache/''',
+    '''(^|/)__pycache__/''',
+]
