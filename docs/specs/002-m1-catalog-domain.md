@@ -1,7 +1,7 @@
 # 002 — M1 Catalog domain
 
-Status: in progress
-Approval: approved (owner, 2026-11-15; recorded in this PR before any code)
+Status: done
+Approval: approved (owner, 2026-11-15; recorded in PR #5 before any code)
 Milestone: M1
 ADRs: 0002, 0003, 0004, 0005, 0012, 0016
 
@@ -300,11 +300,11 @@ PostgreSQL. No `durable=True` is introduced in M1.
 - [x] AC8: `make test-fast` passes with `DJANGO_SETTINGS_MODULE` unset and collects more than 0 tests; the exit-5
   tolerance is removed from the Makefile.
 - [x] AC9: no models, migrations, `INSTALLED_APPS` change, images, asset ports or `media` import.
-- [ ] AC10: `make check`, `make test` and CI are green; the spec status and the architecture §14 "Create product"
+- [x] AC10: `make check`, `make test` and CI are green; the spec status and the architecture §14 "Create product"
   row are updated in the implementation PR.
 
-AC10 stays open until CI has run on the PR (nothing has been pushed yet); every other criterion is met locally, with
-the evidence below. The implementation PR description links each criterion to its test names or command output.
+All criteria are met. PR #5 was merged into `main` on 2026-11-15 as `c3dc368`, with GitHub Actions green and the
+independent Codex review approved; the evidence follows.
 
 ### Evidence (local run, 2026-11-15)
 
@@ -320,7 +320,7 @@ the evidence below. The implementation PR description links each criterion to it
 | AC8 | `make test-fast` exit 0, 367 passed (325 `domain`, 42 `app`), run with `env -u DJANGO_SETTINGS_MODULE`; the exit-5 tolerance is gone from the `Makefile` (an empty selection now exits 5 and fails the target) |
 | AC9 | `git status` shows no models, migrations, `INSTALLED_APPS` change, image field, asset port or `media` import; `makemigrations --check` reports "No changes detected" |
 | Review | Independent Codex review of the implementation: **APPROVE**, no blocking findings; the two earlier findings (Decimal canonicalisation of values with thousands of trailing zeros; mypy coverage of the protocol-conformance assignments) are resolved. |
-| AC10 | Local, last verified run: `make check` exit 0 (`make typecheck`: no issues in 11 source files, including `test_contracts_fake.py` and its fake-to-Protocol assignments); `make test` exit 0, 403 passed against PostgreSQL 17; `git diff --check` clean; architecture §14 row updated. **Open: GitHub CI has not run** (nothing pushed). |
+| AC10 | Local run before the PR: `make check` exit 0 (`make typecheck`: no issues in 11 source files, including `test_contracts_fake.py` and its fake-to-Protocol assignments); `make test` exit 0, 403 passed against PostgreSQL 17; `git diff --check` clean; architecture §14 row updated. **CI: PR #5 GitHub Actions passed, jobs `quality`, `test`, `migrations`, `security` and `secrets` all succeeded; merged into `main` on 2026-11-15 (`c3dc368`).** |
 
 ## Files expected to change
 
