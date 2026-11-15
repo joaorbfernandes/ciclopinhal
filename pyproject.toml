@@ -87,3 +87,36 @@ layers = [
     "backend.config.settings.base",
     "backend.config.env",
 ]
+
+[[tool.importlinter.contracts]]
+name = "Modules: catalog may import core, never the reverse"
+type = "layers"
+layers = [
+    "backend.catalog",
+    "backend.core",
+]
+
+[[tool.importlinter.contracts]]
+name = "Domain and application code is Django-free and persistence-free (AGENTS rule 3)"
+type = "forbidden"
+source_modules = [
+    "backend.*.domain",
+    "backend.*.application",
+    "backend.core.transactions",
+    "backend.core.api",
+]
+forbidden_modules = [
+    "django",
+]
+
+[[tool.importlinter.contracts]]
+name = "Other modules use core only through its api.py (AGENTS rule 2)"
+type = "forbidden"
+source_modules = [
+    "backend.catalog",
+]
+forbidden_modules = [
+    "backend.core.domain",
+    "backend.core.transactions",
+]
+allow_indirect_imports = true
