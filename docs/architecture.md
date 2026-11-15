@@ -62,7 +62,7 @@ database constraints enforce appears; they are edited through simple forms backe
 ModelForm validation (ADR-0005). Deletions that must respect existing associations are enforced by `PROTECT`
 foreign keys; exact behaviour per product decisions P2 and P3.
 
-## 4. Repository contracts (ADR-0003)
+## 4. Repository contracts (ADR-0003, ADR-0016)
 
 - Contracts never contain Django types.
 - The consumer owns the contract: it is declared next to the use cases that need it. A module that needs another
@@ -74,15 +74,14 @@ foreign keys; exact behaviour per product decisions P2 and P3.
 - Query services are concrete classes, not protocols, until a second implementation exists.
 - Every contract has a shared contract test suite run against both the fake and the Django implementation.
 
-**Open — contract style for rule-bearing aggregates** (decided by the PoC before M1):
-- Variant D: primitive/DTO contracts, invariants in pure functions/value objects.
-- Variant E: domain-entity contracts, repository maps record ↔ entity.
-- Hard gates, both variants: no Django imports in domain/application; application tests run without Django
-  settings; contract suite passes for fake and Django implementations; failure-injection test leaves no rows;
-  database constraints present.
-- Scored, only among variants passing all gates: rule locality (weighted first), mapping/DTO code, change cost
-  (add a required unique `sku`), test clarity, effort, reviewability. Choose E if it wins rule locality and is
-  not worse on more than two other criteria; otherwise D.
+**Contract style for rule-bearing aggregates:**
+- **Product** (ADR-0016): `ProductRepository` exchanges `Product` entities. The entity enforces its invariants on
+  every construction, including rehydration; a domain factory normalises input; the Django repository maps
+  rows ↔ entities. A spec that tightens a Product invariant assesses existing rows first (ADR-0016, Consequences).
+- **Other aggregates** (Asset, Homepage, Menu): **Open**, chosen in the spec that introduces each, between primitive/DTO
+  contracts (invariants in pure functions/value objects) and entity contracts. Hard gates for either style: no Django
+  imports in domain/application; application tests run without Django settings; contract suite passes for fake and
+  Django implementations; failure-injection test leaves no rows; database constraints present.
 
 ## 5. Transactions and errors (ADR-0004)
 
@@ -211,7 +210,7 @@ roughly 400 lines.
 
 ## 13. Delivery plan
 
-Before M1: the contract-style PoC (section 4). Before M5: the administration spike (section 10).
+Before M1: the contract-style PoC (section 4; done, ADR-0016). Before M5: the administration spike (section 10).
 
 | # | Scope | Exit check |
 | --- | --- | --- |
@@ -267,6 +266,7 @@ Kept current by every PR that changes a listed entry point or use case. Cells ar
 | 0013 | Backups and tested recovery objectives |
 | 0014 | Specification-driven process with independent agent review |
 | 0015 | Agents share the developer's Git credentials (E4b b) |
+| 0016 | Product repository contracts exchange domain entities |
 
-ADRs to write when decided: contract style (PoC), administration technology (spike), variant timing (M3
+ADRs to write when decided: administration technology (spike), variant timing (M3
 measurement), slug policy (D12), repository visibility and plan (E4), hosting (E9).

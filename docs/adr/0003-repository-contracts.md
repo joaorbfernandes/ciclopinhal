@@ -1,6 +1,6 @@
 # 0003 — Repository contracts without framework types; query services for reads
 
-Status: Accepted (contract style per aggregate pending the PoC)
+Status: Accepted (contract style: Product decided in ADR-0016; other aggregates per their spec)
 
 **Context.** Use cases must be testable with fakes and independent of persistence mechanics, without duplicating
 the ORM.
@@ -11,4 +11,5 @@ repositories. Reads use concrete query services returning DTOs. A shared contrac
 Django implementations.
 
 **Consequences.** Application tests run without a database or Django settings; mapping code exists where
-contracts are entity-based. Primitive/DTO vs entity contracts is decided by the PoC (`docs/architecture.md` §4).
+contracts are entity-based. Primitive/DTO vs entity contracts: entity contracts for Product (ADR-0016); other
+aggregates choose in the spec that introduces them (`docs/architecture.md` §4).
