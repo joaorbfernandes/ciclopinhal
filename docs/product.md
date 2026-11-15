@@ -2,8 +2,8 @@
 
 > Fonte de verdade: *CICLOPINHALEND 2.0 — Visão do Produto (V1)*, aprovada, consolidada com as decisões de
 > produto aprovadas depois do M0.
-> Este ficheiro reproduz os requisitos aprovados. Regras de detalhe ainda não aprovadas estão na secção 7 e são
-> decididas nas especificações (`docs/specs/`).
+> Este ficheiro reproduz os requisitos aprovados. As decisões em aberto, sem regra aprovada, estão na secção 7
+> («Em aberto») e são decididas nas especificações (`docs/specs/`); não são requisitos até serem aprovadas.
 
 ## Estados dos requisitos
 
@@ -70,7 +70,41 @@ Aplicam-se aos produtos físicos da V1, independentemente do suporte futuro a se
 - O Administrador da Plataforma pode designar outra imagem como principal; essa imagem passa para a posição 0 e
   todas as restantes imagens mantêm a sua ordem relativa.
 - Ao remover a imagem principal, a imagem seguinte passa a principal, se existir.
-- Em aberto (D7, secção 7): se é obrigatória pelo menos uma imagem por produto.
+- Um produto pode existir sem imagens: as imagens são opcionais na criação e depois dela (D7).
+- Um produto sem imagens é válido e é público como qualquer outro produto. Remover todas as imagens não invalida
+  nem elimina o produto.
+- A listagem e a página de detalhe suportam produtos sem imagens. A apresentação pública desse caso é uma decisão
+  de apresentação em aberto (D18, secção 7), não uma regra de domínio.
+
+#### Regras do produto
+
+> Aprovadas pelo proprietário em 2026-11-15, registadas na `docs/specs/002-m1-catalog-domain.md` (campo
+> `Approval`). A parte restante de D12 (edição manual do slug; slug quando o nome muda) continua em aberto (secção 7).
+
+**Nome e descrição (N1, N2)**
+
+- O nome é obrigatório. Os espaços no início e no fim são removidos; o nome não pode ficar vazio e tem no máximo
+  200 caracteres.
+- A descrição é opcional e pode ficar vazia. Os espaços no início e no fim são removidos.
+
+**Preços (P4)**
+
+- O preço normal é obrigatório e superior a zero.
+- O preço promocional é opcional; quando existe, é superior a zero e estritamente inferior ao preço normal.
+- Cada preço tem no máximo duas casas decimais, avaliadas pelo valor numérico: 10,500 é aceite e equivale a 10,50.
+  Um valor com mais casas decimais significativas (por exemplo 10,505) é rejeitado, nunca arredondado.
+- Valor máximo de cada preço: 99 999 999,99.
+
+**Endereço do produto — slug (D12, parte da V1 inicial)**
+
+- O slug é gerado automaticamente a partir do nome, na criação do produto.
+- Contém apenas letras minúsculas sem acentos (a–z), algarismos e hífenes. Os acentos são removidos
+  («Ação» → «acao»); qualquer outra sequência de caracteres passa a um único hífen; não há hífenes iniciais ou
+  finais.
+- Tem no máximo 160 caracteres, incluindo o sufixo de desambiguação.
+- Se o slug já existir, tenta-se o sufixo «-2» e depois «-3»; se os três estiverem ocupados, a criação é recusada.
+- Um nome do qual não se consegue gerar um slug válido (por exemplo, só símbolos) é rejeitado.
+- A edição manual do slug não faz parte destas regras (D12, secção 7).
 
 ### Navegação
 
@@ -273,9 +307,8 @@ especificação indicada.
 
 | ID | Questão | Proposta atual | Antes de |
 | --- | --- | --- | --- |
-| D7 | É obrigatória pelo menos uma imagem por produto? Se não for, define-se também a apresentação de um produto sem imagem. (A parte de categoria e marca está resolvida.) | — | M1 |
-| P4 | Regras do preço promocional | Preço > 0; promocional > 0 e inferior ao preço normal | M1 |
-| D12 | Política de slug (URL do produto) | Gerado uma vez a partir do nome; editável só na criação | M2 |
+| D12 | Política de slug (URL do produto), parte restante: edição manual do slug e comportamento do slug quando o nome muda. (Formato e geração na criação: resolvidos, secção 2, «Regras do produto».) | Gerado uma vez a partir do nome; editável só na criação | Fatia de edição do produto |
+| D18 | Apresentação pública de um produto sem imagens, na listagem e no detalhe. É uma decisão de apresentação, não uma regra de domínio | — | M4 |
 | P3 | Eliminar uma marca com produtos associados: bloquear ou outro comportamento? | Bloquear | M2 |
 | D4 | Eliminar um produto ou marca em destaque | Deixa de aparecer na homepage, sem bloquear a eliminação | M2 |
 | P2 | Eliminar uma categoria com produtos associados, sabendo que cada produto exige uma categoria. (A hierarquia está resolvida: categorias planas.) | — | M2 |
@@ -295,5 +328,10 @@ especificação indicada.
 | ID | Resolução | Registada em |
 | --- | --- | --- |
 | D7 (categoria e marca) | Categoria única e obrigatória; marca opcional | Secção 2, «Regras de categoria e marca» |
+| D7 (imagens) | Um produto pode existir sem imagens; é válido e público. A apresentação sem imagem fica em D18 | Secção 2, «Galeria de imagens do produto» |
+| P4 | Preço normal > 0; promocional opcional, > 0 e estritamente inferior; no máximo duas casas decimais pelo valor, rejeitando e nunca arredondando; máximo 99 999 999,99 | Secção 2, «Regras do produto» |
+| D12 (formato e geração) | Slug gerado a partir do nome na criação: a–z, algarismos e hífenes, sem acentos, máximo 160 caracteres com sufixo; três tentativas (`-2`, `-3`); nome sem slug válido é rejeitado | Secção 2, «Regras do produto» |
+| N1 | Nome obrigatório, sem espaços nas pontas, no máximo 200 caracteres | Secção 2, «Regras do produto» |
+| N2 | Descrição opcional, pode ser vazia, sem espaços nas pontas | Secção 2, «Regras do produto» |
 | P1 | A primeira imagem é a principal; o Administrador da Plataforma pode alterá-la | Secção 2, «Galeria de imagens do produto» |
 | P2 (hierarquia) | Categorias planas na V1 | Secção 2, «Regras de categoria e marca» |

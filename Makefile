@@ -10,10 +10,12 @@ export
 
 UV_RUN := uv run --frozen
 # mypy scope (docs/engineering.md §1): contracts, implementations, composition roots, fakes. `wildcard` keeps it empty-safe
-# until the modules exist; `backend/config/env.py` is typed and keeps the check meaningful in M0. The contract suite
-# joins the scope in M1.
+# until the modules exist; `backend/config/env.py` is typed and keeps the check meaningful in M0. The shared contract
+# suite (backend/*/tests/contracts.py) and the file holding the fake-to-Protocol conformance assignments
+# (backend/*/tests/test_contracts_fake.py) are in scope since M1.
 MYPY_SCOPE := backend/config/env.py backend/config/deploy_check.py \
 	$(wildcard backend/*/domain.py backend/*/application.py backend/*/api.py backend/*/repositories.py backend/*/services.py) \
+	$(wildcard backend/*/tests/contracts.py backend/*/tests/test_contracts_fake.py) \
 	$(wildcard tests/fakes)
 # Pinned by tag and digest. The Docker image is the only gitleaks install, so Docker + uv are the only prerequisites.
 GITLEAKS_IMAGE := ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
@@ -61,12 +63,10 @@ deploy-check:
 	  POSTGRES_DB=dummy POSTGRES_USER=dummy POSTGRES_PASSWORD=dummy POSTGRES_HOST=localhost POSTGRES_PORT=5432 \
 	  $(UV_RUN) python -m backend.config.deploy_check $(DEPLOY_DEFERRED)
 
-# Domain and application tests: no Django settings, no database.
-# pytest exits with 5 when nothing is collected; none exist until M1, so that case is reported and accepted.
+# Domain and application tests: no Django settings, no database. An empty selection (for example a mistyped marker)
+# fails: pytest exits with 5 when nothing is collected and that is no longer accepted.
 test-fast:
-	@env -u DJANGO_SETTINGS_MODULE $(UV_RUN) pytest -m "domain or app"; rc=$$?; \
-	if [ $$rc -eq 5 ]; then echo "test-fast: no domain or application tests yet (first ones arrive in M1)"; exit 0; fi; \
-	exit $$rc
+	env -u DJANGO_SETTINGS_MODULE $(UV_RUN) pytest -m "domain or app"
 
 # Everything, with the test settings, against the PostgreSQL started by `make up`.
 test: test-fast

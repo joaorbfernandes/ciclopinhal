@@ -232,7 +232,7 @@ Kept current by every PR that changes a listed entry point or use case. Cells ar
 
 | Workflow | Entry point | Use case / query | Modules | Tests |
 | --- | --- | --- | --- | --- |
-| Create product | — | `CreateProduct` | backoffice, catalog, media | — |
+| Create product | — (M5) | `CreateProduct` (`catalog/application.py`; M1: domain and application only, no persistence or media yet) | backoffice, catalog, media | `backend/catalog/tests/test_create_product.py`, `test_domain.py`, `test_contracts_fake.py` |
 | Change product price | — | `ChangeProductPrice` | backoffice, catalog | — |
 | Delete product | — | delete use case | backoffice, catalog | — |
 | Manage brands (incl. logo) | — | form + constraints | backoffice, catalog, media | — |
