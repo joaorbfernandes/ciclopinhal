@@ -1,10 +1,12 @@
 # CICLOPINHALEND
 
-Configurable web platform for small businesses — website, product catalogue, brands, categories, images and
-content managed through a simple backoffice — starting with Ciclopinhal.
+Configurable web platform for small businesses — website, product catalogue, brands, categories, images,
+services, events and content managed through a simple backoffice — starting with Ciclopinhal.
 Django + PostgreSQL modular monolith, built by one developer with Claude Code and Codex.
 
-**Status:** M0 repository foundation (`docs/specs/001-m0-foundation.md`): tooling, CI and local environment only; no product code yet.
+**Status:** M0 (repository foundation, `docs/specs/001-m0-foundation.md`) and M1 (catalog domain and `CreateProduct`
+without persistence, `docs/specs/002-m1-catalog-domain.md`) are done. Next: M2 (catalog persistence) and, in parallel,
+the UX0 discovery and design track. The full V1 roadmap is in `docs/architecture.md` §13.
 
 ## Prerequisites
 
