@@ -5,7 +5,7 @@ description = "CICLOPINHALEND 2.0 — configurable web platform for small busine
 readme = "README.md"
 requires-python = "==3.13.*"
 dependencies = [
-    "django>=5.2,<5.3",
+    "django>=5.2,<6.2",
     "psycopg[binary]>=3.2,<4",
 ]
 
